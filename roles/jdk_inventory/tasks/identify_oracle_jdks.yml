@@ -15,7 +15,7 @@
   register: copyright_file
 
 - name: "Increase identification score if COPYRIGHT file exists."
-  ansible.builtin.include_tasks: incr_identification_score.yml
+  ansible.builtin.include_tasks: utils/incr_identification_score.yml
   when:
     - copyright_file is defined and copyright_file.failed is defined and not copyright_file.failed
     - copyright_file.stat is defined and copyright_file.stat.exists is defined and copyright_file.stat.exists
@@ -26,12 +26,12 @@
   register: java_version
 
 - name: "Check if java version mentions HotSpot"
-  ansible.builtin.include_tasks: incr_identification_score.yml
+  ansible.builtin.include_tasks: utils/incr_identification_score.yml
   when:
     - java_version.stderr | regex_search('[Hh]ot[Ss]pot')
 
 - name: "Check if java version does NOT mentions Openjdk"
-  ansible.builtin.include_tasks: incr_identification_score.yml
+  ansible.builtin.include_tasks: utils/incr_identification_score.yml
   when:
     - not java_version.stderr | regex_search('OpenJDK')
 
@@ -43,11 +43,11 @@
   ansible.builtin.set_fact:
     unidentified_jdks: "{{ unidentified_jdks + [ jdk_home ] }}"
   when:
-    - oracle_jdk_score | int >= 1 
+    - oracle_jdk_score | int >= 1
     - oracle_jdk_score | int <= 2
 
 - name: "Add JDK to legacy list (if score >= 3)."
   ansible.builtin.set_fact:
     legacy_jdks: "{{ legacy_jdks + [ jdk_home ] }}"
   when:
-    - oracle_jdk_score | int >= 3 
+    - oracle_jdk_score | int >= 3

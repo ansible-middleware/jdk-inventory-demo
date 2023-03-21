@@ -8,8 +8,8 @@
     group: root
   changed_when: false
 
-- name: "Determine if legacy jdks have been installed with RPM"
-  ansible.builtin.include_tasks: remove_jdk.yml
+- name: "Ensure delete legacy JDKs."
+  ansible.builtin.include_tasks: jdk/remove_jdk.yml
   loop: "{{ legacy_jdks }}"
   loop_control:
     loop_var: jdk_home
