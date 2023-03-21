@@ -1,0 +1,17 @@
+---
+- name: "Ensure required parameters are provided."
+  ansible.builtin.assert:
+    that:
+      - jdk_home is defined
+    quiet: true
+
+- name: "Determine if legacy jdks have been installed with RPM"
+  ansible.builtin.include_tasks: is_jdk_installed_by_rpm.yml
+  when:
+    - ansible_distribution == "RedHat" 
+    
+- name: "Delete legacy JDKs on target (if enabled)."
+  ansible.builtin.include_tasks: delete_jdk.yml
+  
+- name: "Migrate legacy (if enabled)."
+  ansible.builtin.include_tasks: migrate.yml

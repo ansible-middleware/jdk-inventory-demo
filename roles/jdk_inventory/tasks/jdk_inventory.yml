@@ -1,0 +1,36 @@
+---
+- name: "Ensure required parameters are provided."
+  ansible.builtin.assert:
+    that:
+      -
+    quiet: true
+
+- name: "Deploy script on target to perfom inventory."
+  ansible.builtin.copy:
+    src: files/inventory.sh
+    dest: /tmp/inventory.sh
+    owner: root
+    group: root
+    mode: 0755
+  changed_when: false
+
+- name: "Perform inventory on target."
+  ansible.builtin.command: "/tmp/inventory.sh"
+  changed_when: false
+  register: inventory_results
+
+- name: "Print inventory results (if debug)."
+  ansible.builtin.debug:
+    var: inventory_results
+  when:
+    - jdk_inventory_debug is defined and jdk_inventory_debug
+
+- name: "Remove JDK inventory script from target."
+  ansible.builtin.file:
+    path: /tmp/inventory.sh
+    state: absent
+  changed_when: false
+
+- name: "Define the list of JDKs found."
+  ansible.builtin.set_fact:
+    all_jdk_inventory: "{{ inventory_results.stdout_lines }}"

@@ -1,0 +1,26 @@
+---
+- name: "Install legacy Oracle JDKs"
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    oracle_jdk_rpms_folder: "{{ rpms_folder | default('./rpms') }}"
+    oracle_jdk_rpms_list:
+      - "{{ oracle_jdk_rpms_folder }}/jdk-6u45-linux-amd64.rpm"
+      - "{{ oracle_jdk_rpms_folder }}/sun-javadb-client-10.6.2-1.1.i386.rpm"
+      - "{{ oracle_jdk_rpms_folder }}/sun-javadb-common-10.6.2-1.1.i386.rpm"
+      - "{{ oracle_jdk_rpms_folder }}/sun-javadb-core-10.6.2-1.1.i386.rpm"
+      - "{{ oracle_jdk_rpms_folder }}/sun-javadb-demo-10.6.2-1.1.i386.rpm"
+      - "{{ oracle_jdk_rpms_folder }}/sun-javadb-docs-10.6.2-1.1.i386.rpm"
+      - "{{ oracle_jdk_rpms_folder }}/sun-javadb-javadoc-10.6.2-1.1.i386.rpm"
+  tasks:
+    - name: "Install dependencies for legacy Oracle JDK."
+      ansible.builtin.package:
+        name: libnsl
+        state: present
+
+    - name: "Ensures all Oracle JDK rpms are installed."
+      ansible.builtin.package:
+        name: "{{ oracle_jdk_rpms_list }}"
+        disable_gpg_check: true
+        state: present

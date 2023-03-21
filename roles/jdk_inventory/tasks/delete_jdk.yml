@@ -1,0 +1,11 @@
+---
+- name: "Ensure required parameters are provided."
+  ansible.builtin.assert:
+    that:
+      - jdk_home is defined
+    quiet: true
+
+- name: "Delete JAVA_HOME from target: {{ jdk_home }}."
+  ansible.builtin.file:
+    path: "{{ jdk_home }}"
+    state: absent

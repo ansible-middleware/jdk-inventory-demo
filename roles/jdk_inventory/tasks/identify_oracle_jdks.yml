@@ -1,0 +1,53 @@
+---
+- name: "Ensure required parameters are provided."
+  ansible.builtin.assert:
+    that:
+      - jdk_home is defined
+    quiet: true
+
+- name: "Reset identification score for jdk with home: {{ jdk_home }}."
+  ansible.builtin.set_fact:
+    oracle_jdk_score: 0
+
+- name: "Check if there a COPYRIGHT file at the folder"
+  ansible.builtin.stat:
+    path: "{{ jdk_home }}/COPYRIGHT"
+  register: copyright_file
+
+- name: "Increase identification score if COPYRIGHT file exists."
+  ansible.builtin.include_tasks: incr_identification_score.yml
+  when:
+    - copyright_file is defined and copyright_file.failed is defined and not copyright_file.failed
+    - copyright_file.stat is defined and copyright_file.stat.exists is defined and copyright_file.stat.exists
+
+- name: "Load java version output."
+  ansible.builtin.command: "{{ jdk_home }}/bin/java -version"
+  changed_when: false
+  register: java_version
+
+- name: "Check if java version mentions HotSpot"
+  ansible.builtin.include_tasks: incr_identification_score.yml
+  when:
+    - java_version.stderr | regex_search('[Hh]ot[Ss]pot')
+
+- name: "Check if java version does NOT mentions Openjdk"
+  ansible.builtin.include_tasks: incr_identification_score.yml
+  when:
+    - not java_version.stderr | regex_search('OpenJDK')
+
+- name: "Display score for {{ jdk_home }}: {{ oracle_jdk_score }}."
+  ansible.builtin.debug:
+    var: oracle_jdk_score
+
+- name: "Add {{ jdk_home }} to unidentified JDKs if score is below 3, but not zero."
+  ansible.builtin.set_fact:
+    unidentified_jdks: "{{ unidentified_jdks + [ jdk_home ] }}"
+  when:
+    - oracle_jdk_score | int >= 1 
+    - oracle_jdk_score | int <= 2
+
+- name: "Add JDK to legacy list (if score >= 3)."
+  ansible.builtin.set_fact:
+    legacy_jdks: "{{ legacy_jdks + [ jdk_home ] }}"
+  when:
+    - oracle_jdk_score | int >= 3 

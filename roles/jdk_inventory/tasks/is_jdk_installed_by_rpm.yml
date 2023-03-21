@@ -1,0 +1,28 @@
+---
+- name: "Ensure required parameters are provided."
+  ansible.builtin.assert:
+    that:
+      - jdk_home is defined
+    quiet: true
+
+- name: "Check if JDK {{ jdk_home }} has been installed using RPM."
+  ansible.builtin.command:
+    argv:
+      - "/tmp/which_rpm.sh"
+      - "{{ jdk_home }}"
+  changed_when: false
+  register: dnf_whatprovides_results
+
+- name: "Remove JDK package (if migration is enabled)."
+  block:
+    - name: "Display package name (if any)"
+      ansible.builtin.debug:
+        var: dnf_whatprovides_results.stdout
+
+    - name: "Delete package associated to legacy JDK: {{ jdk_home }}."
+      ansible.builtin.dnf:
+        name: "{{ dnf_whatprovides_results.stdout }}"
+        state: absent
+  when:
+    - dnf_whatprovides_results.stdout
+    - migrate_legacy_jdk is defined and migrate_legacy_jdk

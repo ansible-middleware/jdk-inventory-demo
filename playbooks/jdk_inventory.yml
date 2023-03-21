@@ -1,0 +1,16 @@
+---
+- name: "Perform inventory of legacies Oracle JDKs"
+  hosts: all
+  become: true
+  gather_facts: false
+  vars:
+    unidentified_jdks: []
+    legacy_jdks: []
+    migrate_legacy_jdk: true
+    # to remove if gather_facts is true
+    ansible_distribution: "RedHat"
+  tasks:
+
+    - name: "Perform inventory on target"
+      ansible.builtin.include_role: 
+        name: jdk_inventory

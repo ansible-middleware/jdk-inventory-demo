@@ -1,0 +1,22 @@
+---
+- name: "Perform JDK inventory on target."
+  ansible.builtin.include_tasks: jdk_inventory.yml
+
+- name: "Identify Oracle JDKs."
+  ansible.builtin.include_tasks: identify_oracle_jdks.yml
+  loop: "{{ all_jdk_inventory }}"
+  loop_control:
+    loop_var: jdk_home
+
+- name: "Print legacy Oracle jdks identified on target (if any)."
+  ansible.builtin.debug:
+    var: legacy_jdks
+
+- name: "Print unidentified jdks on target (if any)."
+  ansible.builtin.debug:
+    var: unidentified_jdks
+
+- name: "Perform migration (if requested)."
+  ansible.builtin.include_tasks: delete_and_migrate.yml
+  when:
+    - migrate_legacy_jdk is defined and migrate_legacy_jdk

@@ -1,0 +1,10 @@
+---
+- name: "Ensure required parameters are provided."
+  ansible.builtin.assert:
+    that:
+      - oracle_jdk_score is defined
+    quiet: true
+
+- name: "Increase identification score ({{ oracle_jdk_score }})."
+  ansible.builtin.set_fact:
+    oracle_jdk_score: "{{ oracle_jdk_score | int + 1 }}"

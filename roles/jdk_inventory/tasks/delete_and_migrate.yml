@@ -1,0 +1,21 @@
+---
+- name: "Deploy on target script to determine if JDK home has been installed by RPM."
+  ansible.builtin.copy:
+    src: files/which_rpm.sh
+    dest: /tmp
+    mode: 0755
+    owner: root
+    group: root
+  changed_when: false
+
+- name: "Determine if legacy jdks have been installed with RPM"
+  ansible.builtin.include_tasks: remove_jdk.yml
+  loop: "{{ legacy_jdks }}"
+  loop_control:
+    loop_var: jdk_home
+
+- name: "Remove script on target to determine if JDK home has been installed by RPM."
+  ansible.builtin.file:
+    path: /tmp/which_rpm.sh
+    state: absent
+  changed_when: false

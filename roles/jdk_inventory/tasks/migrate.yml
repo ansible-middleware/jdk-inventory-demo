@@ -1,0 +1,7 @@
+---
+- name: "Ensure required parameters are provided."
+  ansible.builtin.assert:
+    that:
+      - legacy_jdks is defined
+    quiet: true
+
