@@ -1,0 +1,5 @@
+---
+- name: "Perform migration of legacies Oracle JDKs"
+  ansible.builtin.import_playbook: jdk_inventory.yml
+  vars:
+    migrate_legacy_jdk: true

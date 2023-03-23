@@ -2,7 +2,8 @@
 - name: "Ensure required parameters are provided."
   ansible.builtin.assert:
     that:
-      - jdk_home is defined
+      - legacy_jdk is defined
+      - legacy_jdk.java_home is defined
     quiet: true
 
 - name: "Determine if legacy jdks have been installed with RPM"

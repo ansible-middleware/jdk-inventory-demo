@@ -35,19 +35,28 @@
   when:
     - not java_version.stderr | regex_search('OpenJDK')
 
+- name: "Extract JDK java version (if score above 0, as this might be an Oracle JDKs)"
+  ansible.builtin.set_fact:
+    java_version: "{{ java_version.stderr_lines[0] | regex_search('\"1\\.[0-9]') | replace('\"','') }}" 
+
+- name: "OpenJDK alternative to {{ java_version }}:"
+  ansible.builtin.set_fact:
+    jdk_to_migrate: 
+      - { java_home: "{{ jdk_home }}", migrate_to: "{{ open_jdk_rpm_package_by_version | map(attribute='package') }}" }
+
 - name: "Display score for {{ jdk_home }}: {{ oracle_jdk_score }}."
   ansible.builtin.debug:
     var: oracle_jdk_score
 
 - name: "Add {{ jdk_home }} to unidentified JDKs if score is below 3, but not zero."
   ansible.builtin.set_fact:
-    unidentified_jdks: "{{ unidentified_jdks + [ jdk_home ] }}"
+    unidentified_jdks: "{{ unidentified_jdks + jdk_to_migrate }}"
   when:
     - oracle_jdk_score | int >= 1
     - oracle_jdk_score | int <= 2
 
 - name: "Add JDK to legacy list (if score >= 3)."
   ansible.builtin.set_fact:
-    legacy_jdks: "{{ legacy_jdks + [ jdk_home ] }}"
+    legacy_jdks: "{{ legacy_jdks + jdk_to_migrate }}"
   when:
     - oracle_jdk_score | int >= 3

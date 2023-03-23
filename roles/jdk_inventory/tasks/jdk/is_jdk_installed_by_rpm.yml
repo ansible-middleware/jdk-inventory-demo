@@ -2,14 +2,15 @@
 - name: "Ensure required parameters are provided."
   ansible.builtin.assert:
     that:
-      - jdk_home is defined
+      - legacy_jdk is defined
+      - legacy_jdk.java_home is defined
     quiet: true
 
-- name: "Check if JDK {{ jdk_home }} has been installed using RPM."
+- name: "Check if JDK {{ legacy_jdk.java_home }} has been installed using RPM."
   ansible.builtin.command:
     argv:
       - "/tmp/which_rpm.sh"
-      - "{{ jdk_home }}"
+      - "{{ legacy_jdk.java_home }}"
   changed_when: false
   register: dnf_whatprovides_results
 
@@ -19,7 +20,7 @@
       ansible.builtin.debug:
         var: dnf_whatprovides_results.stdout
 
-    - name: "Delete package associated to legacy JDK: {{ jdk_home }}."
+    - name: "Delete package associated to legacy JDK: {{ legacy_jdk.java_home }}."
       ansible.builtin.dnf:
         name: "{{ dnf_whatprovides_results.stdout }}"
         state: absent

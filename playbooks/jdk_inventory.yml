@@ -6,7 +6,7 @@
   vars:
     unidentified_jdks: []
     legacy_jdks: []
-    migrate_legacy_jdk: true
+    migrate_legacy_jdk: false
     # to remove if gather_facts is true
     ansible_distribution: "RedHat"
   tasks:

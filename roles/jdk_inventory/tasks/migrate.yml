@@ -2,6 +2,23 @@
 - name: "Ensure required parameters are provided."
   ansible.builtin.assert:
     that:
-      - legacy_jdks is defined
+      - legacy_jdk is defined
+      - legacy_jdk.migrate_to is defined
+      - legacy_jdk.java_home is defined
     quiet: true
 
+- name: "Install OpenJDK RPM package {{ legacy_jdk.migrate_to }} to replace removed one {{ legacy_jdk.java_home }}."
+  ansible.builtin.package:
+    name: "{{ legacy_jdk.migrate_to }}"
+    state: present
+
+- name: "Verify that Oracle JDK has been replaced by OpenJDK."
+  ansible.builtin.command: "java -version"
+  register: java_version
+
+- name: "Print java version on target host"
+  ansible.builtin.debug:
+    var: line
+  loop: "{{ java_version.stderr_lines }}"
+  loop_control:
+    loop_var: line

@@ -12,7 +12,7 @@
   ansible.builtin.include_tasks: jdk/remove_jdk.yml
   loop: "{{ legacy_jdks }}"
   loop_control:
-    loop_var: jdk_home
+    loop_var: legacy_jdk
 
 - name: "Remove script on target to determine if JDK home has been installed by RPM."
   ansible.builtin.file:
