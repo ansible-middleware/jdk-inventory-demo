@@ -1,0 +1,20 @@
+---
+- name: "Perform inventory of legacies Oracle JDKs"
+  hosts: all
+  become: true
+  gather_facts: true
+  tasks:
+    - name: "Check which version of java is available."
+      ansible.builtin.command: "java -version"
+      register: java_version
+
+    - name: "Display java version"
+      ansible.builtin.debug:
+        msg: "{{  java_version.stderr }}"
+
+    - name: Populate service facts
+      ansible.builtin.service_facts:
+
+    - name: Print service facts
+      ansible.builtin.debug:
+        msg: "{{ ansible_facts.services['tomcat.service'] }}"

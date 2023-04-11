@@ -11,6 +11,11 @@
     oracle_jdk_rpms_list:
        - "{{ oracle_jdk_rpms_folder }}/jdk-8u351-linux-x64.rpm"
   tasks:
+    - name: "Ensure Openjdk is NOT installed."
+      ansible.builtin.package:
+        name: java-1.8.0-openjdk-headless
+        state: absent
+
     - name: "Install dependencies for legacy Oracle JDK."
       ansible.builtin.package:
         name: libnsl
