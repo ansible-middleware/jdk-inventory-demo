@@ -3,6 +3,8 @@
   hosts: all
   become: true
   gather_facts: false
+  collections:
+    - middleware_automation.jws
   vars:
     unidentified_jdks: []
     legacy_jdks: []
@@ -10,7 +12,26 @@
     # to remove if gather_facts is true
     ansible_distribution: "RedHat"
   tasks:
+    - name: "Shutdown JWS"
+      ansible.builtin.service:
+        name: "tomcat"
+        state: stopped
 
     - name: "Perform inventory on target"
-      ansible.builtin.include_role: 
+      ansible.builtin.include_role:
         name: jdk_inventory
+
+    - name: "Ensure JWS configuration is updated to use new JDK."
+      ansible.builtin.include_role:
+        name: jws
+      vars:
+        jws_java_home: '/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.362.b09-2.el8_7.x86_64/jre/'
+        jws_systemd_enabled: true
+
+    - name: "Restart JWS after migration"
+      ansible.builtin.service:
+        name: "tomcat"
+        state: restarted
+      changed_when: true
+      when:
+        - migrate_legacy_jdk is defined and migrate_legacy_jdk

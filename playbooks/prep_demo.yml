@@ -3,7 +3,10 @@
   hosts: all
   become: true
   gather_facts: false
+  collections:
+    - middleware_automation.jws
   vars:
+    ansible_os_family: 'RedHat'
     oracle_jdk_rpms_folder: "{{ rpms_folder | default('../rpms/oracle-jdk8/') }}"
     oracle_jdk_rpms_list:
        - "{{ oracle_jdk_rpms_folder }}/jdk-8u351-linux-x64.rpm"
@@ -25,3 +28,10 @@
         name: "{{ oracle_jdk_rpms_list }}"
         disable_gpg_check: true
         state: present
+
+    - name: "Deploy JWS"
+      ansible.builtin.include_role:
+        name: jws
+      vars:
+        jws_java_home: /usr/java/jdk1.8.0_351-amd64/
+        jws_systemd_enabled: true
