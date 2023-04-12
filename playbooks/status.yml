@@ -27,6 +27,6 @@
 
     - name: "Display tc status"
       ansible.builtin.debug:
-        msg: "{{ tc_status  }}"
+        msg: "{{ tc_status.stdout  }}"
       when:
         - tc_status is defined
