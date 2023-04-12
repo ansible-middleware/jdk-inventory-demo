@@ -2,11 +2,19 @@
 - name: "Perform inventory of legacies Oracle JDKs"
   hosts: all
   become: true
-  gather_facts: false
+  gather_facts: true
   collections:
     - middleware_automation.jws
   tasks:
-    - name: "Check which version of java is available."
+    - name: "Ensure all tomcat instances are shut down."
       ansible.builtin.service:
         name: tomcat
         state: stopped
+
+    - name: Populate service facts
+      ansible.builtin.service_facts:
+
+    - name: Print service facts
+      ansible.builtin.debug:
+        msg: "{{ ansible_facts.services['tomcat.service'] }}"
+
