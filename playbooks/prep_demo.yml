@@ -27,9 +27,14 @@
         disable_gpg_check: true
         state: present
 
-    - name: "Deploy JWS"
+    - name: "Deploy Tomcat"
       ansible.builtin.include_role:
         name: jws
       vars:
         jws_java_home: /usr/java/jdk1.8.0_351-amd64/
         jws_systemd_enabled: true
+
+    - name: "Ensure Tomcat is running."
+      ansible.builtin.service:
+        name: tomcat
+        state: started
