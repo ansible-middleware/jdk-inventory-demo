@@ -1,0 +1,12 @@
+---
+- name: "Perform inventory of legacies Oracle JDKs"
+  hosts: all
+  become: true
+  gather_facts: false
+  collections:
+    - middleware_automation.jws
+  tasks:
+    - name: "Check which version of java is available."
+      ansible.builtin.service:
+        name: tomcat
+        state: stopped
