@@ -19,3 +19,14 @@
     - name: Print service facts
       ansible.builtin.debug:
         msg: "{{ ansible_facts.services['tomcat.service'] }}"
+
+    - name: "Check which JVM tomcat is running with."
+      ansible.builtin.command: "systemctl status tomcat"
+      changed_when: false
+      register: tc_status
+
+    - name: "Display tc status"
+      ansible.builtin.debug:
+        msg: "{{ tc_status  }}"
+      when:
+        - tc_status is defined
