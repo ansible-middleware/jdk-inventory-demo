@@ -6,6 +6,7 @@
   tasks:
     - name: "Check which version of java is available."
       ansible.builtin.command: "java -version"
+      changed_when: false
       register: java_version
 
     - name: "Display java version"
