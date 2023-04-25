@@ -2,11 +2,9 @@
 - name: "Perform inventory of legacies Oracle JDKs"
   hosts: all
   become: true
-  gather_facts: true
-  collections:
-    - middleware_automation.jws
+  gather_facts: false
   tasks:
-    - name: "Ensure all tomcat instances are shut down."
+    - name: "Ensure all tomcat instances are running."
       ansible.builtin.service:
         name: tomcat
         state: started
