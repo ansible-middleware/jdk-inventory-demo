@@ -25,7 +25,7 @@
       ansible.builtin.include_role:
         name: jws
       vars:
-        jws_java_home: '//usr/lib/jvm/java-1.8.0-openjdk-1.8.0.372.b07-1.el8_7.x86_64/jre/bin/java'
+        jws_java_home: '//usr/lib/jvm/java-1.8.0-openjdk-1.8.0.372.b07-1.el8_7.x86_64/'
         jws_systemd_enabled: true
 
     - name: "Restart JWS after migration"
